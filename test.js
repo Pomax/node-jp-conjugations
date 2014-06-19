@@ -1,4 +1,4 @@
-var converter = require("./index"),
+var verbs = require("./index"),
     lodash = require("lodash");
 
 function test(test, match) {
@@ -7,5 +7,10 @@ function test(test, match) {
 }
 
 // no tests at the moment
+console.log(verbs.conjugate("みる", "v1"));
+console.log(verbs.conjugate("みる"));
+
+console.log(verbs.unconjugate("みられる", "v1"));
+console.log(verbs.unconjugate("いかされている"));
 
 console.log("no errors");

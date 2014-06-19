@@ -1,4 +1,4 @@
-var conjugationForms = [
+  var conjugationForms = [
   //  {  name: "plain affirmative",           forms: ["う", "く", "ぐ", "す", "つ", "む", "ぶ", "ぬ", "る", "る"]  },
 
   // present tense: 0-5
@@ -74,8 +74,8 @@ var conjugationForms = [
 
 conjugationForms.sort(function(a, b) { return b.forms[0].length - a.forms[0].length; });
 
-var verbTypes: ["v5u", "v5k", "v5g", "v5s", "v5t", "v5m", "v5b", "v5n", "v5r", "v1"];
-var verbEndings: ["う", "く", "ぐ", "す", "つ", "む", "ぶ", "ぬ", "る", "る"];
+var verbTypes = ["v5u", "v5k", "v5g", "v5s", "v5t", "v5m", "v5b", "v5n", "v5r", "v1"];
+var verbEndings = ["う", "く", "ぐ", "す", "つ", "む", "ぶ", "ぬ", "る", "る"];
 
 
 var destep = function (word) {
@@ -88,14 +88,12 @@ var destep = function (word) {
       suffix = form.forms[j];
       if(!suffix.trim()) continue;
       if (word.indexOf(suffix) > -1 && word.indexOf(suffix) + suffix.length == word.length) {
-        found.push[form.name];
         word = word.replace(suffix, verbEndings[j]);
-        console.log(form.name, suffix);
         found.push(form.name);
         return {
           word: word,
           found: found
-        }
+        };
       }
     }
   }
@@ -103,7 +101,7 @@ var destep = function (word) {
     word: word,
     found: []
   };
-}
+};
 
 module.exports = {
 
@@ -111,6 +109,7 @@ module.exports = {
    * conjugate a verb
    */
   conjugate: function (verb, type) {
+    type = type || "v5";
     var index, verbstem, ret = [];
     if (type.toLowerCase().indexOf("v1") > -1) {
       index = verbTypes.indexOf("v1");
@@ -138,8 +137,8 @@ module.exports = {
     var found = [];
     var step = { word: word };
     do {
-      step = destep(step.word, type);
-      found = found.concat(step.found);
+      step = destep(step.word);
+      found = step.found.concat(found);
     } while (step.found.length > 0);
     return {
       word: step.word,
