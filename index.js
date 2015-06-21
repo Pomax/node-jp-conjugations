@@ -77,30 +77,33 @@ conjugationForms.sort(function(a, b) { return b.forms[0].length - a.forms[0].len
 var verbTypes = ["v5u", "v5k", "v5g", "v5s", "v5t", "v5m", "v5b", "v5n", "v5r", "v1"];
 var verbEndings = ["う", "く", "ぐ", "す", "つ", "む", "ぶ", "ぬ", "る", "る"];
 
-
-var destep = function (word) {
-  var found = [];
-  var i, last = conjugationForms.length, form;
-  var j, llast = verbEndings.length, suffix;
-  for(i=0; i<last; i++) {
-    form = conjugationForms[i];
-    for(j=0; j<llast; j++) {
-      suffix = form.forms[j];
-      if(!suffix.trim()) continue;
-      if (word.indexOf(suffix) > -1 && word.indexOf(suffix) + suffix.length == word.length) {
-        word = word.replace(suffix, verbEndings[j]);
-        found.push(form.name);
-        return {
-          word: word,
-          found: found
-        };
-      }
-    }
+var process = function(word, seen, aggregated, entry, i, suffix, j) {
+  if(!suffix.trim()) return;
+  var re = new RegExp(suffix + "$");
+  if (word.match(re)) {
+    newword = word.replace(re, verbEndings[j]);
+    // special check for する
+    if (newword === "す") { newword = "する"; }
+    // terminal check for orphan v1
+    if (newword === "る") { return; }
+    aggregated.push(destep(newword, seen.concat({
+      word: newword,
+      found: entry.name,
+      verbType: verbTypes[j]
+    })));
   }
-  return {
-    word: word,
-    found: []
-  };
+};
+
+var destep = function (word, seen) {
+  seen = seen || [];
+  var aggregated = [];
+  conjugationForms.forEach(function(entry, i) {
+    entry.forms.forEach(function(suffix, j) {
+      process(word, seen, aggregated, entry, i, suffix, j);
+    });
+  });
+  if(aggregated.length === 0) return seen.slice();
+  return aggregated;
 };
 
 module.exports = {
@@ -133,17 +136,9 @@ module.exports = {
   /**
    * try to find the original verb for a conjugation
    */
-  unconjugate: function (word) {
-    var found = [];
-    var step = { word: word };
-    do {
-      step = destep(step.word);
-      found = step.found.concat(found);
-    } while (step.found.length > 0);
-    return {
-      word: step.word,
-      forms: found
-    };
+  unconjugate: function (word, verbtype) {
+    var result = destep(word);
+    return result;
   }
 
 };

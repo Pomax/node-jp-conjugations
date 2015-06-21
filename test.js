@@ -6,11 +6,23 @@ function test(test, match) {
   	exit(1);
 }
 
-// no tests at the moment
-console.log(verbs.conjugate("みる", "v1"));
-console.log(verbs.conjugate("みる"));
+function formHTML(verb) {
+  return [
+    "<html>",
+    "<head>",
+    "<meta charset='utf8'>",
+    "</head>",
+    "<body>",
+    "<script type='text/json'>",
+    JSON.stringify(verbs.unconjugate(verb), false, 2),
+    "</script>",
+    "</body>",
+    "</html>"
+  ].join("\n");
 
-console.log(verbs.unconjugate("みられる", "v1"));
-console.log(verbs.unconjugate("いかされている"));
+}
 
-console.log("no errors");
+var fs = require("fs");
+//fs.writeFileSync("test.html", formHTML("させます"), "utf-8");
+fs.writeFileSync("test.html", formHTML("あそんでいます"), "utf-8");
+
